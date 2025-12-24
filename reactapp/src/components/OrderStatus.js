@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
+import ErrorDisplay from './shared/ErrorDisplay';
 
 const OrderStatus = () => {
   const { id } = useParams();
@@ -11,15 +12,9 @@ const OrderStatus = () => {
 
   if (!order) {
     return (
-      <div className="error-container">
-        <span className="error-icon">😢</span>
-        <div className="error-message">Order not found!</div>
-        <div className="error-actions">
-          <button className="error-btn" onClick={() => history.push('/')}>
-            🏠 Go Home
-          </button>
-        </div>
-      </div>
+      <ErrorDisplay 
+        onGoHome={() => history.push('/')}
+      />
     );
   }
 
