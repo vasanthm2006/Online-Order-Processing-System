@@ -21,9 +21,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # ❌ REMOVED: Moving pom.xml (not needed and causes issues)
-
+      # ✅ Run Maven from the folder that contains pom.xml
       - name: Build and analyze with Maven + Sonar
+        working-directory: backend   # 🔴 CHANGE if pom.xml is elsewhere
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
