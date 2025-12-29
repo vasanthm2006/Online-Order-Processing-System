@@ -15,47 +15,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          node-version: 18
 
-      # ✅ Run Maven from the folder that contains pom.xml
-      - name: Build and analyze with Maven + Sonar
-        working-directory: backend   # 🔴 CHANGE if pom.xml is elsewhere
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -B verify \
-          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      - name: Install dependencies
+        run: npm install
 
-      - name: Trigger API (optional)
-        if: always()
-        env:
-          API_URL: ${{ secrets.API_URL }}
-          API_SECRET: ${{ secrets.API_SECRET }}
-        run: |
-          if [ -z "$API_URL" ]; then
-            echo "API_URL not set, skipping API trigger"
-            exit 0
-          fi
-
-          REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f 2)
-          ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f 1)
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-
-          API_PAYLOAD="{ \
-            \"repo_id\": \"$REPO_NAME\", \
-            \"branch_name\": \"$BRANCH_NAME\", \
-            \"api_secret\": \"$API_SECRET\", \
-            \"org_name\": \"$ORG_NAME\" \
-          }"
-
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            -d "$API_PAYLOAD" \
-            "$API_URL"
+      - name: Build project
+        run: npm run build
